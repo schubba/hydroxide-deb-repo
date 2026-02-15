@@ -25,19 +25,25 @@ jobs:
 
       - name: Create Packages
         run: |
-          # Version auslesen oder Fallback
+          # 1. Version ermitteln
           VERSION=$(~/go/bin/hydroxide -v 2>&1 | awk '{print $2}' | sed 's/v//' || echo "0.1.0")
-          mkdir -p dist
           
-          # DEB bauen - Wir geben den absoluten Pfad zur Quelle an
-          fpm -s dir -t deb -n hydroxide -v $VERSION \
-            --prefix /usr/local/bin \
-            -C ~/go/bin hydroxide
+          # 2. Ein sauberes Verzeichnis für den Build erstellen
+          mkdir -p build/usr/local/bin
+          cp ~/go/bin/hydroxide build/usr/local/bin/
+          
+          # 3. DEB bauen - Wir verpacken den Inhalt des 'build' Ordners
+          fpm -s dir -t deb \
+            -n hydroxide \
+            -v $VERSION \
+            -C build .
 
-          # RPM bauen
-          fpm -s dir -t rpm -n hydroxide -v $VERSION \
-            --prefix /usr/local/bin \
-            -C ~/go/bin hydroxide
+          # 4. RPM bauen
+          fpm -s dir -t rpm \
+            -n hydroxide \
+            -v $VERSION \
+            -C build .
+
       - name: Push to Cloudsmith
         env:
           CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
