@@ -52,5 +52,5 @@ jobs:
           # Install Cloudsmith CLI and push the artifacts
           # Packages are automatically GPG-signed by Cloudsmith upon upload
           pip install cloudsmith-cli
-          cloudsmith push deb opensource-89f5/hydroxide/any-distro/any-version *.deb
-          cloudsmith push rpm opensource-89f5/hydroxide/any-distro/any-version *.rpm
+          cloudsmith push deb opensource-89f5/hydroxide/any-distro/any-version *.deb --republish
+          cloudsmith push rpm opensource-89f5/hydroxide/any-distro/any-version *.rpm --republish
