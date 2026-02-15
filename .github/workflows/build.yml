@@ -1,7 +1,7 @@
 name: Hydroxide Build & Push
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs at 00:00 UTC (which is 01:00 CET)
+    - cron: '0 0 * * *' # Runs at 00:00 UTC (01:00 CET)
   workflow_dispatch: # Allows manual triggers
 
 jobs:
@@ -15,37 +15,27 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '>=1.21'
+          cache: false # Disables caching to prevent the "go.sum not found" warning
 
       - name: Install Build Tools
         run: |
-          # Update system and install packaging tools (fpm, rpm)
           sudo apt-get update
           sudo apt-get install -y ruby-dev build-essential rpm
           sudo gem install fpm
 
       - name: Fetch Latest Release and Build
         run: |
-          # 1. Query GitHub API for the latest stable release tag
-          # We extract the tag name (e.g., v0.2.22) and strip the 'v' prefix
           REAL_VERSION=$(curl -s https://api.github.com/repos/emersion/hydroxide/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/' | sed 's/v//')
-          
-          # Fallback version in case of API rate limiting
           if [ -z "$REAL_VERSION" ]; then REAL_VERSION="0.1.0"; fi
           echo "Building stable version: $REAL_VERSION"
 
-          # 2. Install Hydroxide at EXACTLY the discovered stable version
           go install github.com/emersion/hydroxide/cmd/hydroxide@v$REAL_VERSION
-          
-          # 3. Copy binary to workspace for easier packaging
           cp /home/runner/go/bin/hydroxide .
 
-          # 4. Define Package Metadata
           DESCRIPTION="A lightweight CLI Proton Mail bridge, providing IMAP/SMTP endpoints."
           MAINTAINER="Martin Schon <schon.mar@protonmail.com>"
           HOMEPAGE="https://github.com/emersion/hydroxide"
 
-          # 5. Create DEB and RPM packages using FPM with enriched metadata
-          # The binary will be installed to /usr/local/bin on the target system
           fpm -s dir -t deb -n hydroxide -v $REAL_VERSION \
             --maintainer "$MAINTAINER" \
             --description "$DESCRIPTION" \
@@ -66,9 +56,6 @@ jobs:
         env:
           CLOUDSMITH_API_KEY: ${{ secrets.CLOUDSMITH_API_KEY }}
         run: |
-          # Install Cloudsmith CLI and push the artifacts
-          # --republish allows overwriting existing versions for the nightly check
-          # Packages are automatically GPG-signed by Cloudsmith upon upload
           pip install cloudsmith-cli
           cloudsmith push deb opensource-89f5/hydroxide/any-distro/any-version *.deb --republish
           cloudsmith push rpm opensource-89f5/hydroxide/any-distro/any-version *.rpm --republish
