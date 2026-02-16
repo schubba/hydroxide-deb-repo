@@ -6,9 +6,6 @@ Automated DEB/RPM repository for Hydroxide (Proton Mail Bridge CLI).
 
 Provides easy installation and updates for K-9 Mail users and Linux enthusiasts.
 
-This is a community-maintained build-wrapper. 
-For the actual logic and issues with the bridge itself, please visit the original repository at emersion/hydroxide.
-
 ## Why this repository?
 Official Proton Mail Bridge packages can be difficult to manage via standard package managers. This project bridges that gap by providing:
 - **Automation**: Nightly builds ensure you are always close to the latest upstream changes.
@@ -118,8 +115,8 @@ SMTP Servera.b.c.d (Your Server IP)
 SMTP Port 1025
 SMTP SecurityNone
 
-Username Your full Proton Mail address
-Password Your Bridge Password (as shown by hydroxide status)
+Username: Your full Proton Mail address
+Password: **Your Bridge Password** (as shown by hydroxide status)
 
 ### 2. Security Recommendation
 Warning: By default, the communication between your mobile device and this bridge is unencrypted (as Hydroxide assumes a local environment).
@@ -128,6 +125,16 @@ Public/Mobile Networks: Do not expose these ports directly to the internet.
 
 Recommendation: If you want to access your mail from outside your home, it is strongly recommended to use a VPN (e.g., WireGuard or OpenVPN) to establish a secure tunnel to your server. 
 This ensures your credentials and emails remain protected while in transit.
+
+
+## Disclaimer
+
+This is a community-maintained build-wrapper. 
+For the actual logic and issues with the bridge itself, please visit the original repository at emersion/hydroxide.
+
+* It is **not** an official Proton Mail or Hydroxide project.
+* The DEB/RPM packages are provided "as-is" for convenience.
+* For core issues with the bridge functionality, please refer to the original project at [emersion/hydroxide](https://github.com/emersion/hydroxide).
 
 
 ## Credits
